@@ -1,0 +1,44 @@
+sudo nano /etc/ssh/sshd_config
+  PasswordAuthentication no
+  PermitRootLogin no
+
+
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT ACCEPT
+sudo iptables -A INPUT -i lo -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT  # SSH
+sudo iptables -A INPUT -p tcp --dport 1514 -j ACCEPT  # Wazuh agent
+sudo iptables -A INPUT -p tcp --dport 55000 -j ACCEPT  # Wazuh communication
+sudo iptables -A INPUT -p tcp --dport 9200 -j ACCEPT  # Elasticsearch
+sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+sudo iptables -A INPUT -j DROP
+
+sudo netfilter-persistent save
+
+curl -so ~/wazuh-cert-tool.sh https://packages.wazuh.com/resources/4.2/open-distro/tools/certificate-utility/wazuh-cert-tool.sh
+curl -so ~/instances.yml https://packages.wazuh.com/resources/4.2/open-distro/tools/certificate-utility/instances_aio.yml
+bash ~/wazuh-cert-tool.sh
+sudo mkdir /etc/elasticsearch/certs/
+sudo mv ~/certs/elasticsearch* /etc/elasticsearch/certs/
+sudo mv ~/certs/admin* /etc/elasticsearch/certs/
+sudo cp ~/certs/root-ca* /etc/elasticsearch/certs/
+
+#Log4J
+sudo mkdir -p /etc/elasticsearch/jvm.options.d
+echo '-Dlog4j2.formatMsgNoLookups=true' | sudo tee /etc/elasticsearch/jvm.options.d/disabledlog4j.options
+sudo chmod 2750 /etc/elasticsearch/jvm.options.d/disabledlog4j.options
+sudo chown root:elasticsearch /etc/elasticsearch/jvm.options.d/disabledlog4j.options
+
+#fail2ban
+sudo nano /etc/fail2ban/jail.local
+  [sshd]
+  enabled = true
+  port    = ssh
+  filter  = sshd
+  logpath = /var/log/auth.log
+  maxretry = 3
+sudo systemctl restart fail2ban
+
+
+
