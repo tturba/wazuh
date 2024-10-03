@@ -1,0 +1,88 @@
+tar -cvzf wazuh_central_components.tar.gz ~/wazuh_files_backup/
+
+mv wazuh_central_components.tar.gz /
+cd /
+
+tar -xzvf wazuh_central_components.tar.gz
+cd ~/wazuh_files_backup/<DATE_TIME>
+
+systemctl stop wazuh-indexer
+
+sudo cp etc/wazuh-indexer/jvm.options /etc/wazuh-indexer/jvm.options
+chown wazuh-indexer:wazuh-indexer /etc/wazuh-indexer/jvm.options
+sudo cp -r etc/wazuh-indexer/jvm.options.d/* /etc/wazuh-indexer/jvm.options.d/
+chown wazuh-indexer:wazuh-indexer /etc/wazuh-indexer/jvm.options.d
+sudo cp etc/wazuh-indexer/log4j2.properties /etc/wazuh-indexer/log4j2.properties
+chown wazuh-indexer:wazuh-indexer /etc/wazuh-indexer/log4j2.properties
+sudo cp etc/wazuh-indexer/opensearch.keystore /etc/wazuh-indexer/opensearch.keystore
+chown wazuh-indexer:wazuh-indexer /etc/wazuh-indexer/opensearch.keystore
+sudo cp -r etc/wazuh-indexer/opensearch-observability/* /etc/wazuh-indexer/opensearch-observability/
+chown -R wazuh-indexer:wazuh-indexer /etc/wazuh-indexer/opensearch-observability/
+sudo cp -r etc/wazuh-indexer/opensearch-reports-scheduler/* /etc/wazuh-indexer/opensearch-reports-scheduler/
+chown -R wazuh-indexer:wazuh-indexer /etc/wazuh-indexer/opensearch-reports-scheduler/
+sudo cp usr/lib/sysctl.d/wazuh-indexer.conf /usr/lib/sysctl.d/wazuh-indexer.conf
+
+systemctl start wazuh-indexer
+
+systemctl stop filebeat
+systemctl stop wazuh-manager
+
+sudo cp etc/filebeat/filebeat.reference.yml /etc/filebeat/
+sudo cp etc/filebeat/fields.yml /etc/filebeat/
+sudo cp -r etc/filebeat/modules.d/* /etc/filebeat/modules.d/
+sudo cp -r etc/postfix/* /etc/postfix/
+sudo cp var/ossec/etc/client.keys /var/ossec/etc/
+chown root:wazuh /var/ossec/etc/client.keys
+sudo cp -r var/ossec/etc/sslmanager* /var/ossec/etc/
+sudo cp var/ossec/etc/ossec.conf /var/ossec/etc/
+chown root:wazuh /var/ossec/etc/ossec.conf
+sudo cp var/ossec/etc/internal_options.conf /var/ossec/etc/
+chown root:wazuh /var/ossec/etc/internal_options.conf
+sudo cp var/ossec/etc/local_internal_options.conf /var/ossec/etc/
+chown root:wazuh /var/ossec/etc/local_internal_options.conf
+sudo cp -r var/ossec/etc/rules/* /var/ossec/etc/rules/
+chown -R wazuh:wazuh /var/ossec/etc/rules/
+sudo cp -r var/ossec/etc/decoders/* /var/ossec/etc/decoders
+chown -R wazuh:wazuh /var/ossec/etc/decoders/
+sudo cp -r var/ossec/etc/shared/* /var/ossec/etc/shared/
+chown -R wazuh:wazuh /var/ossec/etc/shared/
+chown root:wazuh /var/ossec/etc/shared/ar.conf
+sudo cp -r var/ossec/logs/* /var/ossec/logs/
+chown -R wazuh:wazuh /var/ossec/logs/
+sudo cp -r var/ossec/queue/agentless/*  /var/ossec/queue/agentless/
+chown -R wazuh:wazuh /var/ossec/queue/agentless/
+sudo cp var/ossec/queue/agents-timestamp /var/ossec/queue/
+chown root:wazuh /var/ossec/queue/agents-timestamp
+sudo cp -r var/ossec/queue/fts/* /var/ossec/queue/fts/
+chown -R wazuh:wazuh /var/ossec/queue/fts/
+sudo cp -r var/ossec/queue/rids/* /var/ossec/queue/rids/
+chown -R wazuh:wazuh /var/ossec/queue/rids/
+sudo cp -r var/ossec/stats/* /var/ossec/stats/
+chown -R wazuh:wazuh /var/ossec/stats/
+sudo cp -r var/ossec/var/multigroups/* /var/ossec/var/multigroups/
+chown -R wazuh:wazuh /var/ossec/var/multigroups/
+
+sudo cp -r var/ossec/etc/*.pem /var/ossec/etc/
+chown -R root:wazuh /var/ossec/etc/*.pem
+sudo cp var/ossec/etc/authd.pass /var/ossec/etc/
+chown -R root:wazuh /var/ossec/etc/authd.pass
+
+sudo cp var/ossec/active-response/bin/<CUSTOM_ACTIVE_RESPONSE_SCRIPT> /var/ossec/active-response/bin/
+chown root:wazuh /var/ossec/active-response/bin/<CUSTOM_ACTIVE_RESPONSE_SCRIPT>
+sudo cp var/ossec/etc/lists/<USER_CDB_LIST>.cdb /var/ossec/etc/lists/
+chown root:wazuh /var/ossec/etc/lists/<USER_CDB_LIST>.cdb
+sudo cp var/ossec/integrations/<CUSTOM_INTEGRATION_SCRIPT> /var/ossec/integrations/
+chown root:wazuh /var/ossec/integrations/<CUSTOM_INTEGRATION_SCRIPT>
+sudo cp var/ossec/wodles/<CUSTOM_WODLE_SCRIPT> /var/ossec/wodles/
+chown root:wazuh /var/ossec/wodles/<CUSTOM_WODLE_SCRIPT>
+
+sudo cp var/ossec/queue/db/* /var/ossec/queue/db/
+chown -R wazuh:wazuh /var/ossec/queue/db/
+
+systemctl start filebeat
+
+systemctl start wazuh-manager
+
+mkdir -p /usr/share/wazuh-dashboard/data/wazuh/downloads/reports/
+sudo cp -r usr/share/wazuh-dashboard/data/wazuh/downloads/reports/* /usr/share/wazuh-dashboard/data/wazuh/downloads/reports/
+chown -R wazuh-dashboard:wazuh-dashboard /usr/share/wazuh-dashboard/data/wazuh/downloads/
