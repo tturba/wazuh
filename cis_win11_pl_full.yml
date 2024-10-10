@@ -1,0 +1,344 @@
+
+# Plik: cis_win11_pl.yml
+# Opis: Pełna polityka SCA dla Windows 11 Pro PL, bazująca na CIS Benchmarks.
+
+- policy:
+    id: 1
+    name: "CIS Benchmark for Windows 11 Pro PL - Ustawienia systemowe"
+    description: "Pełna polityka SCA dla Windows 11 Pro w wersji polskiej, zgodna z wytycznymi CIS."
+    checks:
+      # Konta użytkowników i ustawienia haseł
+      - id: 1001
+        title: "Upewnij się, że 'Konta: Status konta Administrator' jest ustawione na 'Wyłączone'"
+        description: "To ustawienie określa, czy lokalne konto Administratora jest włączone lub wyłączone."
+        rationale: "Wyłączenie konta Administrator zmniejsza ryzyko nieautoryzowanego dostępu."
+        remediation: "Ustaw 'Konta: Status konta Administrator' na 'Wyłączone' w Zasadach grupy."
+        compliance:
+          - cis: ["5.1.1"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
+        name: "AdministratorAccountStatus"
+        value: 0
+
+      - id: 1002
+        title: "Upewnij się, że 'Konta: Status konta gościa' jest ustawione na 'Wyłączone'"
+        description: "To ustawienie określa, czy lokalne konto gościa jest włączone lub wyłączone."
+        rationale: "Wyłączenie konta gościa zmniejsza ryzyko nieautoryzowanego dostępu."
+        remediation: "Ustaw 'Konta: Status konta gościa' na 'Wyłączone' w Zasadach grupy."
+        compliance:
+          - cis: ["5.1.2"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
+        name: "GuestAccountStatus"
+        value: 0
+
+      - id: 1003
+        title: "Upewnij się, że zasady dotyczące haseł wymuszają złożoność hasła"
+        description: "Zasady dotyczące haseł powinny wymagać, aby hasła spełniały określone wymagania dotyczące złożoności."
+        rationale: "Złożone hasła utrudniają złamanie zabezpieczeń metodą siłową."
+        remediation: "Skonfiguruj zasady dotyczące haseł w Zasadach grupy, aby wymuszały złożoność."
+        compliance:
+          - cis: ["5.1.3"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters"
+        name: "PasswordComplexity"
+        value: 1
+
+      - id: 1004
+        title: "Upewnij się, że minimalna długość hasła wynosi co najmniej 14 znaków"
+        description: "Ustawienie minimalnej długości hasła na 14 znaków zwiększa bezpieczeństwo kont użytkowników."
+        rationale: "Dłuższe hasła są trudniejsze do złamania metodą siłową."
+        remediation: "Ustaw minimalną długość hasła na 14 znaków w Zasadach grupy."
+        compliance:
+          - cis: ["5.1.4"]
+        condition: key_value_greater_than
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters"
+        name: "MinimumPasswordLength"
+        value: 14
+
+      - id: 1005
+        title: "Upewnij się, że konto użytkownika jest blokowane po 5 nieudanych próbach logowania"
+        description: "To ustawienie określa, ile nieudanych prób logowania jest dozwolonych, zanim konto zostanie zablokowane."
+        rationale: "Blokowanie konta po kilku nieudanych próbach chroni przed atakami siłowymi."
+        remediation: "Ustaw próg blokady konta na 5 w Zasadach grupy."
+        compliance:
+          - cis: ["5.1.5"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
+        name: "AccountLockoutThreshold"
+        value: 5
+
+      # Ustawienia zabezpieczeń sieciowych
+      - id: 2001
+        title: "Upewnij się, że zapora systemu Windows jest włączona dla wszystkich profili"
+        description: "Zapora systemu Windows powinna być włączona, aby chronić system przed nieautoryzowanym dostępem."
+        rationale: "Włączenie zapory systemowej zwiększa poziom bezpieczeństwa, blokując nieautoryzowane połączenia."
+        remediation: "Włącz zaporę systemową dla profili domeny, prywatnego i publicznego."
+        compliance:
+          - cis: ["5.2.1"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\StandardProfile"
+        name: "EnableFirewall"
+        value: 1
+
+      - id: 2002
+        title: "Upewnij się, że ochrona zaawansowana systemu Windows jest włączona"
+        description: "To ustawienie umożliwia zaawansowane monitorowanie połączeń sieciowych."
+        rationale: "Zaawansowana ochrona pomaga w wykrywaniu nieautoryzowanych połączeń i ataków sieciowych."
+        remediation: "Włącz zaawansowaną ochronę w konfiguracji zapory systemowej."
+        compliance:
+          - cis: ["5.2.2"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\StandardProfile"
+        name: "DisableNotifications"
+        value: 0
+
+      # Ustawienia dotyczące logowania i audytu
+      - id: 3001
+        title: "Upewnij się, że audyt logowania jest włączony dla wszystkich kont"
+        description: "Audyt logowania powinien być włączony, aby monitorować działania logowania i wykrywać nieautoryzowane próby."
+        rationale: "Włączenie audytu logowania umożliwia śledzenie i analizę prób logowania."
+        remediation: "Skonfiguruj zasady grupy, aby włączyć audyt logowania dla wszystkich kont."
+        compliance:
+          - cis: ["5.3.1"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Services\EventLog\Security"
+        name: "AuditLogon"
+        value: 1
+
+      - id: 3002
+        title: "Upewnij się, że audyt zmian w politykach zabezpieczeń jest włączony"
+        description: "Audyt zmian w politykach zabezpieczeń umożliwia monitorowanie modyfikacji, które mogą wpływać na bezpieczeństwo."
+        rationale: "Monitorowanie zmian w politykach zabezpieczeń pomaga wykrywać nieautoryzowane modyfikacje."
+        remediation: "Skonfiguruj zasady grupy, aby włączyć audyt zmian w politykach zabezpieczeń."
+        compliance:
+          - cis: ["5.3.2"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Services\EventLog\Security"
+        name: "AuditPolicyChange"
+        value: 1
+
+      # Ustawienia dotyczące dostępu fizycznego
+      - id: 4001
+        title: "Upewnij się, że hasło wymagane jest przy wznowieniu pracy z trybu uśpienia"
+        description: "Wymaganie hasła po wznowieniu z trybu uśpienia chroni przed nieautoryzowanym dostępem."
+        rationale: "Wymuszanie uwierzytelnienia po wznowieniu z trybu uśpienia zmniejsza ryzyko nieautoryzowanego dostępu do systemu."
+        remediation: "Skonfiguruj zasady grupy, aby wymagać hasła po wznowieniu pracy z trybu uśpienia."
+        compliance:
+          - cis: ["5.4.1"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SOFTWARE\Policies\Microsoft\Windows\System"
+        name: "RequireLogonAfterResume"
+        value: 1
+
+      # Konfiguracja usług systemowych
+      - id: 5001
+        title: "Upewnij się, że usługa Windows Defender jest włączona i aktywna"
+        description: "Usługa Windows Defender powinna być włączona jako podstawowa ochrona antywirusowa."
+        rationale: "Włączenie usługi Windows Defender zapewnia ochronę przed złośliwym oprogramowaniem."
+        remediation: "Upewnij się, że usługa Windows Defender jest włączona i aktywna w ustawieniach systemowych."
+        compliance:
+          - cis: ["5.5.1"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender"
+        name: "DisableAntiSpyware"
+        value: 0
+
+      - id: 5002
+        title: "Upewnij się, że usługa zdalnego pulpitu jest wyłączona, jeśli nie jest potrzebna"
+        description: "Wyłączenie usługi zdalnego pulpitu, jeśli nie jest wymagana, zmniejsza powierzchnię ataku."
+        rationale: "Usługa zdalnego pulpitu może być wykorzystana przez atakujących do uzyskania dostępu do systemu."
+        remediation: "Skonfiguruj zasady grupy, aby wyłączyć usługę zdalnego pulpitu, jeśli nie jest potrzebna."
+        compliance:
+          - cis: ["5.5.2"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server"
+        name: "fDenyTSConnections"
+        value: 1
+
+      # Ustawienia prywatności i telemetryczne
+      - id: 6001
+        title: "Upewnij się, że telemetria jest ustawiona na poziom 'Bezpieczny'"
+        description: "Ustawienie telemetryki na poziom bezpieczny minimalizuje ilość danych wysyłanych do Microsoft."
+        rationale: "Minimalizacja przesyłanych danych telemetrycznych zmniejsza ryzyko wycieku informacji."
+        remediation: "Skonfiguruj zasady grupy, aby ustawić telemetrię na poziom 'Bezpieczny'."
+        compliance:
+          - cis: ["5.6.1"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection"
+        name: "AllowTelemetry"
+        value: 0
+
+      - id: 6002
+        title: "Upewnij się, że Cortana jest wyłączona na ekranie blokady"
+        description: "Wyłączenie Cortany na ekranie blokady zwiększa bezpieczeństwo poprzez zapobieganie nieautoryzowanemu dostępowi."
+        rationale: "Ograniczenie funkcji Cortany zmniejsza możliwość uzyskania dostępu do danych systemowych."
+        remediation: "Skonfiguruj zasady grupy, aby wyłączyć Cortanę na ekranie blokady."
+        compliance:
+          - cis: ["5.6.2"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search"
+        name: "AllowCortana"
+        value: 0
+
+      # Zabezpieczenia systemowe i zabezpieczenia plików
+      - id: 7001
+        title: "Upewnij się, że Windows SmartScreen jest włączony"
+        description: "Windows SmartScreen powinien być włączony, aby chronić użytkowników przed potencjalnie szkodliwymi aplikacjami."
+        rationale: "Włączenie Windows SmartScreen zmniejsza ryzyko uruchomienia niebezpiecznego oprogramowania."
+        remediation: "Skonfiguruj zasady grupy, aby włączyć Windows SmartScreen."
+        compliance:
+          - cis: ["5.7.1"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SOFTWARE\Policies\Microsoft\Windows\System"
+        name: "EnableSmartScreen"
+        value: 1
+
+      - id: 7002
+        title: "Upewnij się, że 'Kontrola aplikacji i przeglądarki' jest ustawiona na 'Włączona'"
+        description: "Ustawienie 'Kontroli aplikacji i przeglądarki' na 'Włączona' zwiększa poziom zabezpieczeń."
+        rationale: "Zapewnienie, że przeglądanie stron i uruchamianie aplikacji odbywa się w sposób bezpieczny."
+        remediation: "Skonfiguruj zasady grupy, aby ustawić 'Kontrolę aplikacji i przeglądarki' na 'Włączona'."
+        compliance:
+          - cis: ["5.7.2"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\App and Browser protection"
+        name: "UILockdown"
+        value: 1
+
+      # Audyt systemowy i zarządzanie dziennikami
+      - id: 8001
+        title: "Upewnij się, że ustawienia audytu są skonfigurowane dla 'Logowania do systemu'"
+        description: "Konfiguracja ustawień audytu dla logowania do systemu umożliwia śledzenie dostępu do systemu."
+        rationale: "Audyt logowań pozwala monitorować działania użytkowników oraz identyfikować nieautoryzowane próby dostępu."
+        remediation: "Skonfiguruj zasady grupy, aby włączyć audyt dla 'Logowania do systemu'."
+        compliance:
+          - cis: ["5.8.1"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Services\EventLog\System"
+        name: "AuditLogonEvents"
+        value: 1
+
+      - id: 8002
+        title: "Upewnij się, że przechowywanie dzienników zdarzeń jest skonfigurowane na co najmniej 30 dni"
+        description: "Przechowywanie dzienników zdarzeń przez co najmniej 30 dni zapewnia możliwość analizy incydentów."
+        rationale: "Dłuższe przechowywanie dzienników zdarzeń umożliwia pełniejszą analizę bezpieczeństwa."
+        remediation: "Skonfiguruj zasady grupy, aby ustawić minimalny czas przechowywania dzienników na 30 dni."
+        compliance:
+          - cis: ["5.8.2"]
+        condition: key_value_greater_than
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Services\EventLog\Security"
+        name: "Retention"
+        value: 30
+
+      # Konfiguracja polityki haseł i kont użytkowników
+      - id: 9001
+        title: "Upewnij się, że historia haseł przechowuje co najmniej 24 poprzednie hasła"
+        description: "Konfiguracja historii haseł zapobiega ponownemu użyciu poprzednich haseł."
+        rationale: "Zapobieganie ponownemu użyciu poprzednich haseł zwiększa bezpieczeństwo."
+        remediation: "Skonfiguruj zasady grupy, aby historia haseł przechowywała co najmniej 24 poprzednie hasła."
+        compliance:
+          - cis: ["5.9.1"]
+        condition: key_value_greater_than
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters"
+        name: "PasswordHistorySize"
+        value: 24
+
+      - id: 9002
+        title: "Upewnij się, że hasło nie wygasa przed 1 dniem"
+        description: "Hasło powinno być ważne przez co najmniej 1 dzień, aby zapobiec natychmiastowej zmianie hasła i użyciu starego."
+        rationale: "Utrzymanie minimalnego czasu życia hasła zapobiega częstym zmianom i ponownemu użyciu."
+        remediation: "Skonfiguruj zasady grupy, aby hasło miało minimalny czas życia ustawiony na 1 dzień."
+        compliance:
+          - cis: ["5.9.2"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters"
+        name: "MinimumPasswordAge"
+        value: 1
+
+      - id: 9003
+        title: "Upewnij się, że hasło wygasa nie później niż po 60 dniach"
+        description: "Hasła użytkowników powinny wygasać co 60 dni, aby wymuszać ich regularną zmianę."
+        rationale: "Regularna zmiana haseł zmniejsza ryzyko nieautoryzowanego dostępu."
+        remediation: "Skonfiguruj zasady grupy, aby hasło miało maksymalny czas życia ustawiony na 60 dni."
+        compliance:
+          - cis: ["5.9.3"]
+        condition: key_value_less_than
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters"
+        name: "MaximumPasswordAge"
+        value: 60
+
+      # Zabezpieczenia sieciowe: protokoły i zasady
+      - id: 10001
+        title: "Upewnij się, że protokół SMBv1 jest wyłączony"
+        description: "Wyłączenie przestarzałego protokołu SMBv1 zwiększa bezpieczeństwo sieci."
+        rationale: "SMBv1 jest podatny na ataki, a jego wyłączenie zapobiega potencjalnym zagrożeniom."
+        remediation: "Wyłącz protokół SMBv1 w ustawieniach systemowych."
+        compliance:
+          - cis: ["5.10.1"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters"
+        name: "SMB1"
+        value: 0
+
+      - id: 10002
+        title: "Upewnij się, że używany jest protokół NTLMv2"
+        description: "Protokół NTLMv2 zapewnia większe bezpieczeństwo uwierzytelnienia sieciowego niż starsze wersje."
+        rationale: "Stosowanie NTLMv2 zmniejsza ryzyko przechwycenia i złamania haseł."
+        remediation: "Skonfiguruj zasady grupy, aby wymuszać użycie NTLMv2."
+        compliance:
+          - cis: ["5.10.2"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Control\Lsa"
+        name: "LmCompatibilityLevel"
+        value: 5
+
+      # Ograniczenia dotyczące urządzeń przenośnych i wymiennych
+      - id: 11001
+        title: "Upewnij się, że blokowane jest automatyczne odtwarzanie na wszystkich nośnikach"
+        description: "Blokowanie automatycznego odtwarzania zapobiega uruchomieniu złośliwego oprogramowania z urządzeń przenośnych."
+        rationale: "Wyłączenie automatycznego odtwarzania zmniejsza ryzyko infekcji systemu."
+        remediation: "Skonfiguruj zasady grupy, aby blokować automatyczne odtwarzanie na wszystkich nośnikach."
+        compliance:
+          - cis: ["5.11.1"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer"
+        name: "NoDriveTypeAutoRun"
+        value: 255
+
+      - id: 11002
+        title: "Upewnij się, że wyłączony jest dostęp do portów USB dla urządzeń magazynujących"
+        description: "Wyłączenie dostępu do portów USB dla urządzeń magazynujących zapobiega nieautoryzowanemu kopiowaniu danych."
+        rationale: "Blokowanie dostępu do portów USB zmniejsza ryzyko wycieku danych."
+        remediation: "Skonfiguruj zasady grupy, aby wyłączyć dostęp do portów USB dla urządzeń magazynujących."
+        compliance:
+          - cis: ["5.11.2"]
+        condition: key_value_equals
+        value_type: number
+        target: "HKLM\SYSTEM\CurrentControlSet\Services\USBSTOR"
+        name: "Start"
+        value: 4
