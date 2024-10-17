@@ -1,0 +1,72 @@
+import pyodbc
+import requests
+import json
+
+# Konfiguracja połączenia do MSSQL
+server = 'your_sql_server_address'  # Adres serwera MSSQL
+database = 'your_database_name'  # Nazwa bazy danych
+username = 'your_username'  # Użytkownik MSSQL
+password = 'your_password'  # Hasło do MSSQL
+procedure_name = 'your_procedure_name'  # Nazwa procedury sprawdzającej anomalie
+
+# Konfiguracja Wazuh API
+wazuh_api_url = 'https://your_wazuh_manager_ip:55000/alerts'  # URL do Wazuh API
+wazuh_user = 'your_wazuh_user'
+wazuh_password = 'your_wazuh_password'
+
+# Funkcja łączenia z bazą danych i uruchamiania procedury
+def query_mssql():
+    conn_str = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}'
+    conn = pyodbc.connect(conn_str)
+    cursor = conn.cursor()
+    try:
+        # Uruchamianie procedury
+        cursor.execute(f"EXEC {procedure_name}")
+        rows = cursor.fetchall()
+        
+        # Przetwarzanie wyników
+        critical_count = 0
+        for row in rows:
+            if row[0] == 'CRITICAL':  # Zakładam, że pierwsza kolumna wyników to status
+                critical_count += 1
+        
+        if critical_count > 0:
+            send_alert_to_wazuh(critical_count)
+
+    except Exception as e:
+        print(f"Error while querying MSSQL: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+
+# Funkcja wysyłająca alert do Wazuh
+def send_alert_to_wazuh(critical_count):
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Basic {wazuh_user}:{wazuh_password}'
+    }
+    
+    alert_data = {
+        "rule": {
+            "level": 10,  # Poziom krytyczności alertu
+            "description": f"Detected {critical_count} critical anomalies in MSSQL"
+        },
+        "agent": {
+            "name": "mssql-server"
+        },
+        "manager": {
+            "name": "wazuh-manager"
+        }
+    }
+    
+    try:
+        response = requests.post(wazuh_api_url, headers=headers, data=json.dumps(alert_data), verify=False)
+        if response.status_code == 200:
+            print(f"Alert sent successfully: {response.json()}")
+        else:
+            print(f"Failed to send alert: {response.text}")
+    except Exception as e:
+        print(f"Error while sending alert to Wazuh: {e}")
+
+# Uruchamianie zapytania do MSSQL
+query_mssql()
