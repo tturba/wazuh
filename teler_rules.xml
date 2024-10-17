@@ -1,0 +1,33 @@
+<group name=”teler,”>
+<rule id=”100012" level=”10">
+<decoded_as>json</decoded_as>
+<field name=”category” type=”pcre2">Common Web Attack(: .*)?|CVE-[0–9]{4}-[0–9]{4,7}</field>
+<field name=”request_uri” type=”pcre2">\D.+|-</field>
+<field name=”remote_addr” type=”pcre2">\d+.\d+.\d+.\d+|::1</field>
+<mitre>
+<id>T1210</id>
+</mitre>
+<description>teler detected $(category) against resource $(request_uri) from $(remote_addr)</description>
+</rule>
+<rule id=”100013" level=”10">
+<decoded_as>json</decoded_as>
+<field name=”category” type=”pcre2">Bad (IP Address|Referrer|Crawler)
+</field>
+<field name=”request_uri” type=”pcre2">\D.+|-</field>
+<field name=”remote_addr” type=”pcre2">\d+.\d+.\d+.\d+|::1</field>
+<mitre>
+<id>T1590</id>
+</mitre>
+<description>teler detected $(category) against resource $(request_uri) from $(remote_addr)</description>
+</rule>
+<rule id=”100014" level=”10">
+<decoded_as>json</decoded_as>
+<field name=”category” type=”pcre2">Directory Bruteforce</field>
+<field name=”request_uri” type=”pcre2">\D.+|-</field>
+<field name=”remote_addr” type=”pcre2">\d+.\d+.\d+.\d+|::1</field>
+<mitre>
+<id>T1595</id>
+</mitre>
+<description>teler detected $(category) against resource $(request_uri) from $(remote_addr)</description>
+</rule>
+</group>
