@@ -1,0 +1,6 @@
+<active-response>
+<disabled>no</disabled>
+<command>fwblock</command>
+<location>local</location>
+<rules_id>100012,100013,100014</rules_id>
+</active-response>
