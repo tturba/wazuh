@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decoders>
+    <decoder name="sql_login_events">
+        <parent>json</parent>
+        <type>SQL Server</type>
+        <program_name>SQL Server</program_name>
+        <options>
+            <field name="type" offset="0">login_event</field>
+            <field name="username" offset="1">username</field>
+            <field name="source_ip" offset="2">client_ip</field>
+            <field name="status" offset="3">status</field>
+            <field name="details" offset="4">message</field>
+        </options>
+    </decoder>
+    <decoder name="sql_error_log">
+        <parent>json</parent>
+        <type>SQL Server</type>
+        <program_name>SQL Server</program_name>
+        <options>
+            <field name="type" offset="0">error</field>
+            <field name="severity" offset="1">severity</field>
+            <field name="code" offset="2">error_code</field>
+            <field name="details" offset="3">message</field>
+        </options>
+    </decoder>
+    <decoder name="sql_query_log">
+        <parent>json</parent>
+        <type>SQL Server</type>
+        <program_name>SQL Server</program_name>
+        <options>
+            <field name="type" offset="0">query_log</field>
+            <field name="duration" offset="1">query_time_ms</field>
+            <field name="query_text" offset="2">query</field>
+            <field name="database_name" offset="3">database</field>
+        </options>
+    </decoder>
+</decoders>
