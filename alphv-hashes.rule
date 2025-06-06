@@ -1,0 +1,10 @@
+<group name="blackcat,">
+  <rule id="110002" level="13">
+    <if_sid>554, 550</if_sid>
+    <list field="sha256" lookup="match_key">etc/lists/malware-hashes</list>
+    <description>File with known BlackCat malware hash detected: $(file)</description>
+    <mitre>
+      <id>T1204.002</id>
+    </mitre>
+  </rule>
+</group>
