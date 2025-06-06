@@ -1,0 +1,52 @@
+<group name="blackcat,">
+<!-- Detects when BlackCat deletes shadow copies -->
+   <rule id="100104" level="12">
+     <if_sid>61603</if_sid>
+     <field name="win.eventdata.CommandLine" type="pcre2">(?i)wmic.exe\s\sShadowcopy\sDelete</field>
+     <description>Shadow copies have been deleted. Possible ransomware detected.</description>
+     <mitre>
+       <id>T1490</id>
+     </mitre>
+  </rule>
+
+<!-- Detects when BlackCat prevents autorecovery-->
+  <rule id="100105" level="12">
+     <if_sid>61603</if_sid>
+     <field name="win.eventdata.CommandLine" type="pcre2">(?i)bcdedit\s\s\/set {default} recoveryenabled No</field>
+     <description>System recovery disabled. Possible ransomware detected.</description>
+     <mitre>
+       <id>T1490</id>
+     </mitre>
+  </rule>
+
+<!-- Detects when BlackCat clears event logs-->
+  <rule id="100106" level="12">
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.CommandLine" type="pcre2">(?i)\C:.*\('wevtutil.exe el'\) DO wevtutil.exe cl.*</field>
+    <description>Event logs cleared. BlackCat ransomware detected.</description>
+    <mitre>
+      <id>T1070.001</id>
+    </mitre>
+  </rule>
+
+<!-- Detects when BlackCat creates ransom notes -->
+  <rule id="100107" level="12" timeframe="100" frequency="2">
+    <if_sid>61613</if_sid>
+    <field name="win.eventdata.targetFilename" type="pcre2">(?i)\C:.*.RECOVER-.*-FILES.txt</field>
+    <description>The file $(win.eventdata.targetFilename) has been created in multiple directories. Possible BlackCat ransomware detected.</description>
+    <mitre>
+      <id>T1486</id>
+    </mitre>
+  </rule>
+
+<!-- Detects when BlackCat modifies the registry to change MaxMpxCt settings -->
+  <rule id="100108" level="12">
+    <if_sid>61615</if_sid>
+    <field name="win.eventdata.eventType" type="pcre2" >^SetValue$</field>
+    <field name="win.eventdata.targetObject" type="pcre2" >HKLM\\\System\\CurrentControlSet\\Services\\LanmanServer\\Parameters\\MaxMpxCt</field>
+        <description>Changes were made to MaxMpxCt settings on $(win.system.computer). BlackCat ransomware detected.</description>   
+    <mitre>
+      <id>T1543</id>
+    </mitre>
+  </rule>
+</group>
