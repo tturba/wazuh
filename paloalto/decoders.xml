@@ -3,8 +3,37 @@
   <type>firewall</type>
 </decoder>
 
+<!-- TRAFFIC log -->
 <decoder name="paloalto-traffic">
   <parent>paloalto</parent>
-  <regex>^<[^>]+>\s*\d{2}:\d{2}:\d{2}\s+[^ ]+\s+[^ ]+\s+TRAFFIC,\d+,[^,]+,[^,]+,[^,]+,.*</regex>
-  <order>program_name</order>
+  <regex>^(TRAFFIC),[^,]+,([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),.*</regex>
+  <order>program_name,log_type,time_generated,serial_number,type,subtype,source_zone,dest_zone,src_ip,dst_ip</order>
+</decoder>
+
+<!-- THREAT log -->
+<decoder name="paloalto-threat">
+  <parent>paloalto</parent>
+  <regex>^(THREAT),[^,]+,([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),.*</regex>
+  <order>program_name,log_type,time_generated,serial_number,type,subtype,source_zone,dest_zone,src_ip,dst_ip</order>
+</decoder>
+
+<!-- SYSTEM log -->
+<decoder name="paloalto-system">
+  <parent>paloalto</parent>
+  <regex>^(SYSTEM),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),.*</regex>
+  <order>program_name,time_generated,serial_number,type,subtype,description</order>
+</decoder>
+
+<!-- CONFIG log -->
+<decoder name="paloalto-config">
+  <parent>paloalto</parent>
+  <regex>^(CONFIG),([^,]+),([^,]+),([^,]+),([^,]+),.*</regex>
+  <order>program_name,time_generated,serial_number,type,user,description</order>
+</decoder>
+
+<!-- HIPMATCH log -->
+<decoder name="paloalto-hipmatch">
+  <parent>paloalto</parent>
+  <regex>^(HIPMATCH),([^,]+),([^,]+),([^,]+),([^,]+),.*</regex>
+  <order>program_name,time_generated,serial_number,src_user,dst_user,description</order>
 </decoder>
