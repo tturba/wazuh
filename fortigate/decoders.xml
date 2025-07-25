@@ -1,0 +1,81 @@
+<decoder name="fortigate">
+  <program_name>FortiGate</program_name>
+</decoder>
+
+<decoder name="fortigate-msg">
+  <parent>fortigate</parent>
+  <regex>date=(\S+)</regex>
+  <order>date</order>
+</decoder>
+
+<decoder name="fortigate-msg2">
+  <parent>fortigate</parent>
+  <regex>time=(\S+)</regex>
+  <order>time</order>
+</decoder>
+
+<decoder name="fortigate-devname">
+  <parent>fortigate</parent>
+  <regex>devname="([^"]+)"</regex>
+  <order>devname</order>
+</decoder>
+
+<decoder name="fortigate-type">
+  <parent>fortigate</parent>
+  <regex>type="([^"]+)"</regex>
+  <order>type</order>
+</decoder>
+
+<decoder name="fortigate-subtype">
+  <parent>fortigate</parent>
+  <regex>subtype="([^"]+)"</regex>
+  <order>subtype</order>
+</decoder>
+
+<decoder name="fortigate-srcip">
+  <parent>fortigate</parent>
+  <regex>srcip=([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)</regex>
+  <order>srcip</order>
+</decoder>
+
+<decoder name="fortigate-dstip">
+  <parent>fortigate</parent>
+  <regex>dstip=([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)</regex>
+  <order>dstip</order>
+</decoder>
+
+<decoder name="fortigate-srcport">
+  <parent>fortigate</parent>
+  <regex>srcport=(\d+)</regex>
+  <order>srcport</order>
+</decoder>
+
+<decoder name="fortigate-dstport">
+  <parent>fortigate</parent>
+  <regex>dstport=(\d+)</regex>
+  <order>dstport</order>
+</decoder>
+
+<decoder name="fortigate-action">
+  <parent>fortigate</parent>
+  <regex>action="([^"]+)"</regex>
+  <order>action</order>
+</decoder>
+
+<decoder name="fortigate-service">
+  <parent>fortigate</parent>
+  <regex>service="([^"]+)"</regex>
+  <order>service</order>
+</decoder>
+
+<decoder name="fortigate-msg-text">
+  <parent>fortigate</parent>
+  <regex>msg="([^"]+)"</regex>
+  <order>msg</order>
+</decoder>
+
+<decoder name="fortigate-attack">
+  <parent>fortigate</parent>
+  <regex>attack="([^"]+)"</regex>
+  <order>attack</order>
+</decoder>
