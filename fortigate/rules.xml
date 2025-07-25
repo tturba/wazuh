@@ -1,0 +1,70 @@
+<group name="fortigate,">
+
+  <rule id="100000" level="7">
+    <description>FortiGate - Blocked RDP connection</description>
+    <match>dstport=3389</match>
+    <match>action="block"</match>
+    <group>firewall,rdp,</group>
+  </rule>
+
+  <rule id="100001" level="6">
+    <description>FortiGate - Blocked SSH connection</description>
+    <match>dstport=22</match>
+    <match>action="block"</match>
+    <group>firewall,ssh,</group>
+  </rule>
+
+  <rule id="100002" level="5">
+    <description>FortiGate - Blocked HTTP request</description>
+    <match>service="HTTP"</match>
+    <match>action="block"</match>
+    <group>firewall,http,</group>
+  </rule>
+
+  <rule id="100003" level="8">
+    <description>FortiGate - TCP port scan detected</description>
+    <match>attack="TCP port scan"</match>
+    <match>anomaly detection</match>
+    <group>network,anomaly,scan,</group>
+  </rule>
+
+  <rule id="100004" level="9">
+    <description>FortiGate - UDP flood detected</description>
+    <match>attack="udp_flood"</match>
+    <group>network,anomaly,flood,</group>
+  </rule>
+
+  <rule id="100005" level="4">
+    <description>FortiGate - User login failure</description>
+    <match>logid=0100032000</match>
+    <group>auth,login,fortigate,</group>
+  </rule>
+
+  <rule id="100006" level="3">
+    <description>FortiGate - Admin login successful</description>
+    <match>logid=0100030000</match>
+    <group>auth,admin,fortigate,</group>
+  </rule>
+
+  <rule id="100007" level="5">
+    <description>FortiGate - Blocked DNS request</description>
+    <match>dstport=53</match>
+    <match>action="block"</match>
+    <group>firewall,dns,</group>
+  </rule>
+
+  <rule id="100008" level="5">
+    <description>FortiGate - Blocked SMTP request</description>
+    <match>dstport=25</match>
+    <match>action="block"</match>
+    <group>firewall,smtp,</group>
+  </rule>
+
+  <rule id="100009" level="4">
+    <description>FortiGate - Blocked ICMP</description>
+    <match>proto=1</match>
+    <match>action="block"</match>
+    <group>firewall,icmp,</group>
+  </rule>
+
+</group>
