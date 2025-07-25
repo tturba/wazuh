@@ -1,0 +1,10 @@
+<decoder name="paloalto">
+  <program_name>[^ ]*</program_name>
+  <type>firewall</type>
+</decoder>
+
+<decoder name="paloalto-traffic">
+  <parent>paloalto</parent>
+  <regex>^<[^>]+>\s*\d{2}:\d{2}:\d{2}\s+[^ ]+\s+[^ ]+\s+TRAFFIC,\d+,[^,]+,[^,]+,[^,]+,.*</regex>
+  <order>program_name</order>
+</decoder>
