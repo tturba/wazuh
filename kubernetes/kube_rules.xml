@@ -1,0 +1,19 @@
+<group name="k8s_audit,">
+  <rule id="110002" level="0">
+    <location>k8s</location>
+    <field name="apiVersion">audit</field>
+    <description>Kubernetes audit log.</description>
+  </rule>
+
+  <rule id="110003" level="5">
+    <if_sid>110002</if_sid>
+    <regex type="pcre2">requestURI\":.+", \"verb\": \"create</regex>
+    <description>Kubernetes request to create resource</description>
+  </rule>
+
+  <rule id="110004" level="5">
+    <if_sid>110002</if_sid>
+    <regex type="pcre2">requestURI\":.+", \"verb\": \"delete</regex>
+    <description>Kubernetes request to delete resource</description>
+  </rule>
+</group>
