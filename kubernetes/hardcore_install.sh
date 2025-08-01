@@ -10,11 +10,13 @@ KUBECTL_VERSION="v1.31.1"            # https://github.com/kubernetes/kubernetes/
 CRICTL_VERSION="v1.30.0"             # https://github.com/kubernetes-sigs/cri-tools/releases
 
 ### ========================
-echo "[1/12] Aktualizacja systemu"
+echo "[1/14] Aktualizacja systemu"
 sudo apt update && sudo apt upgrade -y
 
-echo "[2/12] Instalacja Docker"
-sudo apt install -y ca-certificates curl gnupg lsb-release apt-transport-https conntrack python3 python3-pip
+echo "[2/14] Instalacja wymaganych pakietów"
+sudo apt install -y ca-certificates curl gnupg lsb-release apt-transport-https conntrack python3 python3-pip git make golang
+
+echo "[3/14] Instalacja Docker"
 sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
   sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
@@ -27,26 +29,41 @@ sudo apt install -y docker-ce docker-ce-cli containerd.io
 sudo systemctl enable docker
 sudo systemctl start docker
 
-echo "[3/12] Instalacja kubectl"
+echo "[4/14] Instalacja cri-dockerd"
+if [ ! -f /usr/local/bin/cri-dockerd ]; then
+  git clone https://github.com/Mirantis/cri-dockerd.git
+  cd cri-dockerd
+  make
+  sudo install -o root -g root -m 0755 cri-dockerd /usr/local/bin/cri-dockerd
+  sudo cp -a packaging/systemd/* /etc/systemd/system
+  sudo sed -i 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
+  sudo systemctl daemon-reload
+  sudo systemctl enable cri-docker.service
+  sudo systemctl enable --now cri-docker.socket
+  cd ..
+  rm -rf cri-dockerd
+fi
+
+echo "[5/14] Instalacja kubectl"
 curl -sLO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin/
 
-echo "[4/12] Instalacja Minikube"
+echo "[6/14] Instalacja Minikube"
 curl -sLo minikube "https://github.com/kubernetes/minikube/releases/download/${MINIKUBE_VERSION}/minikube-linux-amd64"
 chmod +x minikube
 sudo mv minikube /usr/local/bin/
 
-echo "[5/12] Instalacja crictl"
+echo "[7/14] Instalacja crictl"
 curl -sLO "https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz"
 tar zxvf crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
 sudo mv crictl /usr/local/bin/
 rm crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
 
-echo "[6/12] Uruchamianie Minikube"
-sudo minikube start --driver=none
+echo "[8/14] Uruchamianie Minikube"
+sudo minikube start --driver=none --container-runtime=docker --cri-socket=unix:///var/run/cri-dockerd.sock
 
-echo "[7/12] Tworzenie katalogu audytu"
+echo "[9/14] Tworzenie katalogu audytu"
 sudo mkdir -p /etc/kubernetes/audit
 
 cat << 'EOF' | sudo tee /etc/kubernetes/audit/audit-policy.yaml
@@ -73,14 +90,14 @@ webhook:
       url: "http://${WAZUH_SERVER_IP}:55000"
 EOF
 
-echo "[8/12] Edycja kube-apiserver.yaml"
+echo "[10/14] Modyfikacja kube-apiserver.yaml"
 KUBE_APISERVER="/etc/kubernetes/manifests/kube-apiserver.yaml"
 sudo sed -i '/- kube-apiserver/a\    - --audit-policy-file=/etc/kubernetes/audit/audit-policy.yaml' $KUBE_APISERVER
 sudo sed -i '/- kube-apiserver/a\    - --audit-webhook-config-file=/etc/kubernetes/audit/audit-webhook.yaml' $KUBE_APISERVER
 sudo sed -i '/- kube-apiserver/a\    - --audit-webhook-batch-max-wait=5s' $KUBE_APISERVER
 sudo sed -i '/- kube-apiserver/a\    - --audit-webhook-batch-max-size=10' $KUBE_APISERVER
 
-echo "[9/12] Dodawanie dekoderów do Wazuh"
+echo "[11/14] Dodawanie dekoderów do Wazuh"
 sudo tee /var/ossec/etc/decoders/k8s-audit.xml > /dev/null << 'EOD'
 <decoder name="k8s-audit">
   <program_name>k8s-audit</program_name>
@@ -108,7 +125,7 @@ sudo tee /var/ossec/etc/decoders/k8s-audit.xml > /dev/null << 'EOD'
 </decoder>
 EOD
 
-echo "[10/12] Dodawanie reguł do Wazuh"
+echo "[12/14] Dodawanie reguł do Wazuh"
 sudo tee /var/ossec/etc/rules/k8s-audit_rules.xml > /dev/null << 'EOR'
 <group name="k8s_audit,">
   <rule id="910001" level="5">
@@ -138,7 +155,7 @@ sudo tee /var/ossec/etc/rules/k8s-audit_rules.xml > /dev/null << 'EOR'
 </group>
 EOR
 
-echo "[11/12] Instalacja listenera webhooka"
+echo "[13/14] Instalacja listenera webhooka"
 sudo tee /usr/local/bin/k8s_audit_listener.py > /dev/null << 'EOF'
 #!/usr/bin/env python3
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -159,7 +176,7 @@ if __name__ == "__main__":
 EOF
 sudo chmod +x /usr/local/bin/k8s_audit_listener.py
 
-echo "[12/12] Restart Wazuh i uruchomienie listenera"
+echo "[14/14] Restart Wazuh i uruchomienie listenera"
 sudo systemctl restart wazuh-manager
 nohup python3 /usr/local/bin/k8s_audit_listener.py &
 
