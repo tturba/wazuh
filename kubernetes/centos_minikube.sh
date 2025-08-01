@@ -1,4 +1,7 @@
 #!/bin/bash
+
+#odpalanie na FORCE
+#minikube start --driver=docker --force
 set -e
 
 echo "[1/9] Wyłączanie SELinux..."
@@ -55,7 +58,7 @@ mv cri-docker.service /etc/systemd/system/
 mv cri-docker.socket /etc/systemd/system/
 sed -i 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
 systemctl daemon-reload
-# --- POCZĄTEK POPRAWKI ---
+
 echo "[6b/9] Restartowanie i włączanie cri-dockerd..."
 systemctl restart docker # Upewnij się, że Docker działa z nową konfiguracją
 systemctl enable --now cri-docker.socket cri-docker.service
@@ -63,12 +66,11 @@ systemctl enable --now cri-docker.socket cri-docker.service
 # Dodajmy krótką przerwę i weryfikację, czy usługa faktycznie działa
 sleep 5
 if ! systemctl is-active --quiet cri-docker.service; then
-    echo "❌ Usługa cri-docker.service nie uruchomiła się poprawnie."
+    echo "Usługa cri-docker.service nie uruchomiła się poprawnie."
     journalctl -u cri-docker.service -n 50 --no-pager
     exit 1
 fi
-echo "✅ Usługa cri-docker.service jest aktywna."
-# --- KONIEC POPRAWKI ---
+echo " Usługa cri-docker.service jest aktywna."
 
 echo "[7/9] Instalacja Minikube..."
 MINIKUBE_VERSION="v1.36.0"
@@ -89,5 +91,4 @@ echo "[FINAL] Uruchamianie Minikube z Dockerem + cri-dockerd..."
 # Wersja Minikube v1.36.0 domyślnie używa Kubernetes v1.30.0.
 # Jeśli chcesz konkretną wersję, dodaj flagę --kubernetes-version=v1.33.1
 minikube start --driver=none --container-runtime=docker --cri-socket=unix:///var/run/cri-dockerd.sock
-
-echo "✅ Minikube powinno teraz odpalić bez błędów."
+#minikube start --driver=docker --force
