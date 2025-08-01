@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Config
+preferences: {}
+clusters:
+  - name: wazuh-webhook
+    cluster:
+      insecure-skip-tls-verify: true
+      server: https://<wazuh_server_ip>:8080 
+
+# kubeconfig files require a context. Provide one for the API server.
+current-context: webhook
+contexts:
+- context:
+    cluster: wazuh-webhook
+    user: kube-apiserver # Replace with name of API server if it’s different
+  name: webhook
