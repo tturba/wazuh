@@ -1,10 +1,15 @@
 #!/bin/bash
 set -e
 
-WAZUH_SERVER_IP="192.168.88.252"   # <- ZMIEŃ na IP swojego Wazuh Managera
-MINIKUBE_VERSION="v1.28.0"
-CRICTL_VERSION="v1.25.0"
+### ========================
+### KONFIGURACJA
+### ========================
+WAZUH_SERVER_IP="192.168.88.252"     # IP Wazuh Managera
+MINIKUBE_VERSION="v1.33.1"           # https://github.com/kubernetes/minikube/releases
+KUBECTL_VERSION="v1.31.1"            # https://github.com/kubernetes/kubernetes/releases
+CRICTL_VERSION="v1.30.0"             # https://github.com/kubernetes-sigs/cri-tools/releases
 
+### ========================
 echo "[1/12] Aktualizacja systemu"
 sudo apt update && sudo apt upgrade -y
 
@@ -23,17 +28,17 @@ sudo systemctl enable docker
 sudo systemctl start docker
 
 echo "[3/12] Instalacja kubectl"
-curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+curl -sLO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin/
 
 echo "[4/12] Instalacja Minikube"
-curl -Lo minikube "https://github.com/kubernetes/minikube/releases/download/${MINIKUBE_VERSION}/minikube-linux-amd64"
+curl -sLo minikube "https://github.com/kubernetes/minikube/releases/download/${MINIKUBE_VERSION}/minikube-linux-amd64"
 chmod +x minikube
 sudo mv minikube /usr/local/bin/
 
 echo "[5/12] Instalacja crictl"
-curl -LO "https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz"
+curl -sLO "https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRICTL_VERSION}/crictl-${CRICTL_VERSION}-linux-amd64.tar.gz"
 tar zxvf crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
 sudo mv crictl /usr/local/bin/
 rm crictl-${CRICTL_VERSION}-linux-amd64.tar.gz
