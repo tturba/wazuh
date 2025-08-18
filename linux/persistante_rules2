@@ -1,0 +1,28 @@
+<group name="common_persistence_techniques,">
+  <rule id="100105" level="10">
+    <if_sid>80700</if_sid>
+    <field name="audit.key">possible_rcscript_attack</field>
+    <description>[RC script "$(audit.file.name)" has been added, modified, or deleted]: Possible RC scripts persistence attack</description>
+    <mitre>
+      <id>T1037.004</id>
+    </mitre>
+  </rule>
+
+  <rule id="100106" level="10">
+    <if_sid>530</if_sid>
+    <match>'ppid of rc_local': 1$</match>
+    <description>[PPID of rc-local.service is 1]: Possible RC scripts persistence attack</description>
+    <mitre>
+      <id>T1037.004</id>
+    </mitre>
+  </rule>
+
+  <rule id="100107" level="10">
+    <if_sid>530</if_sid>
+    <regex type="pcre2">'state of rc_local service': (?!inactive$)</regex>
+    <description>[rc-local.service is not inactive]: Possible RC scripts persistence attack</description>
+    <mitre>
+      <id>T1037.004</id>
+    </mitre>
+  </rule>
+</group>
