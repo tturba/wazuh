@@ -1,0 +1,28 @@
+<group name="common_persistence_techniques,sshd,">
+  <rule id="100100" level="10">
+    <if_sid>554</if_sid>
+    <field name="file" type="pcre2">\/authorized_keys$</field>
+    <description>SSH authorized_keys file "$(file)" has been added</description>
+    <mitre>
+      <id>T1098.004</id>
+    </mitre>
+  </rule>
+  
+  <rule id="100101" level="10">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">\/authorized_keys$</field>
+    <description>SSH authorized_keys file "$(file)" has been modified</description>
+    <mitre>
+      <id>T1098.004</id>
+    </mitre>
+  </rule>
+
+  <rule id="100102" level="10">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">\/sshd_config$</field>
+    <description>SSH config file "$(file)" has been modified</description>
+    <mitre>
+      <id>T1098.004</id>
+    </mitre>
+  </rule>
+</group>
