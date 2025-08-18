@@ -1,0 +1,19 @@
+<group name="common_persistence_techniques,">
+  <rule id="100120" level="10">
+    <if_sid>554</if_sid>
+    <field name="file" type="pcre2">\/etc\/profile$|\/etc/profile.d\/|\/etc\/bash.bashrc$|\/etc\/bash.bash_logout$|.bash_profile$|.bash_login$|.profile$|.bash_profile$|.bashrc$|.bash_logout$</field>
+    <description>Unix shell config "$(file)" has been added</description>
+    <mitre>
+      <id>T1546.004</id>
+    </mitre>
+  </rule>
+  
+  <rule id="100121" level="10">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">\/etc\/profile$|\/etc/profile.d\/|\/etc\/bash.bashrc$|\/etc\/bash.bash_logout$|.bash_profile$|.bash_login$|.profile$|.bash_profile$|.bashrc$|.bash_logout$</field>
+    <description>Unix shell config "$(file)" has been modified</description>
+    <mitre>
+      <id>T1546.004</id>
+    </mitre>
+  </rule>
+</group>
