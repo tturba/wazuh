@@ -1,0 +1,19 @@
+<group name="common_persistence_techniques,">
+  <rule id="100125" level="10">
+    <if_sid>80700</if_sid>
+    <field name="audit.key">possible_preload_hijack</field>
+    <description>[Config file "ld.so.preload" has been added, modified, or deleted]: Possible dynamic linker hijacking</description>
+    <mitre>
+      <id>T1574.006</id>
+    </mitre>
+  </rule>
+
+  <rule id="100126" level="10">
+    <if_sid>530</if_sid>
+    <match>'check for LD_PRELOAD envar'</match>
+    <description>[LD_PRELOAD envar has been set]: Possible dynamic linker hijacking</description>
+    <mitre>
+      <id>T1574.006</id>
+    </mitre>
+  </rule>
+</group>
