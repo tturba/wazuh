@@ -1,0 +1,19 @@
+<group name="common_persistence_techniques,">
+  <rule id="100130" level="12">
+    <if_sid>554</if_sid>
+    <field name="file" type="pcre2">\/systemd\/system\/.*\.timer$|\/systemd\/system\/.*\.service$</field>
+    <description>[Systemd "$(file)" has been added]: Possible task/job scheduling</description>
+    <mitre>
+      <id>T1053.006</id>
+    </mitre>
+  </rule>
+  
+  <rule id="100131" level="12">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">\/systemd\/system\/.*\.timer$|\/systemd\/system\/.*\.service$</field>
+    <description>[Systemd "$(file)" has been modified]: Possible task/job scheduling</description>
+    <mitre>
+      <id>T1053.006</id>
+    </mitre>
+  </rule>
+</group>
