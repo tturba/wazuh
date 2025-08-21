@@ -1,0 +1,38 @@
+<group name="hyper-v,">
+
+  <rule id="110074" level="0">
+    <location>command_hyper-v_metrics</location>
+    <decoded_as>json</decoded_as>
+    <description>Base rule for Hyper-V metrics.</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="110075" level="3">
+    <if_sid>110074</if_sid>
+    <field name="hyper-v.metric">VM state</field>
+    <description>Hyper-V metrics: State for the VM "$(hyper-v.vm_name)" is "$(hyper-v.state)".</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="110076" level="3">
+    <if_sid>110074</if_sid>
+    <field name="hyper-v.metric">Disk usage</field>
+    <description>Hyper-V metrics: $(hyper-v.used_percent)% of drive "$(hyper-v.drive)" used on "$(hyper-v.host)".</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="110077" level="3">
+    <if_sid>110074</if_sid>
+    <field name="hyper-v.metric">Memory usage</field>
+    <description>Hyper-V metrics: $(hyper-v.used_percent)% of memory used on "$(hyper-v.host)".</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="110078" level="3">
+    <if_sid>110074</if_sid>
+    <field name="hyper-v.metric">CPU usage</field>
+    <description>Hyper-V metrics: $(hyper-v.used_percent)% of CPU used on "$(hyper-v.host)".</description>
+    <options>no_full_log</options>
+  </rule>
+
+</group>
