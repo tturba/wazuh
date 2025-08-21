@@ -1,0 +1,27 @@
+<group name="hyper-v,windows,">
+
+  <rule id="110070" level="0">
+    <if_sid>60009,60010</if_sid>
+    <field name="win.system.providerName" type="pcre2">^Microsoft-Windows-Hyper-V</field>
+    <description>Base rule for Hyper-V events.</description>
+  </rule>
+
+  <rule id="110071" level="3">
+    <if_sid>110070</if_sid>
+    <field name="win.system.eventID" type="pcre2">^12140$|^12170$|^12180$|^12597$|^12598$|^12670$|^13002$|^13003$|^18500$|^18502$|^18504$|^18510$|^18516$|^18596$|^26000$|^26004$|^26012$|^26016$|^26074$</field>
+    <description>Hyper-V: $(win.system.message).</description>
+  </rule>
+
+  <rule id="110072" level="5">
+    <if_sid>60011</if_sid>
+    <field name="win.system.providerName" type="pcre2">^Microsoft-Windows-Hyper-V</field>
+    <description>Hyper-V: $(win.system.message).</description>
+  </rule>
+
+  <rule id="110073" level="10">
+    <if_sid>60012</if_sid>
+    <field name="win.system.providerName" type="pcre2">^Microsoft-Windows-Hyper-V</field>
+    <description>Hyper-V: $(win.system.message).</description>
+  </rule>
+
+</group>
