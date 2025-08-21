@@ -1,0 +1,31 @@
+{
+ "order": 0,
+ "index_patterns": [
+    "wazuh-alerts-4.x-*",
+    "wazuh-archives-4.x-*"
+  ],
+ "settings": {
+   ...
+  },
+ "mappings": {
+    "dynamic_templates": [
+      {
+   ...
+      "data": {
+        "properties": {
+          "hyper-v.free_gb": {
+            "type": "double"
+          },
+          "hyper-v.free_percent": {
+            "type": "double"
+          },
+          "hyper-v.used_gb": {
+            "type": "double"
+          },
+          "hyper-v.used_percent": {
+            "type": "double"
+          },
+          "audit": {
+            "properties": {
+              "acct": {
+                "type": "keyword"
