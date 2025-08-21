@@ -1,0 +1,50 @@
+<group name="lotl,powershell,">
+
+  <rule id="100017" level="8">
+    <if_sid>61603</if_sid>
+ <field name="win.eventdata.originalFileName" type="pcre2">(?i)(bitsadmin\.exe)</field>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(transfer|addfile|upload|http)</field>
+    <options>no_full_log</options>
+    <description>Exfiltration with Bitadmin identified</description>
+    <mitre>
+      <id>T1102</id>
+      <id>T1567.002</id>
+    </mitre>
+  </rule>
+
+  <rule id="100018" level="8">
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.originalFileName" type="pcre2">(?i)(curl\.exe)</field>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(curl\s+-T\s+.*C:\\.*http)</field>
+    <options>no_full_log</options>
+    <description>Exfiltration using Curl detected</description>
+    <mitre>
+      <id>T1102</id>
+      <id>T1567.002</id>
+    </mitre>
+  </rule>
+
+  <rule id="100019" level="9">
+    <if_sid>60009</if_sid>
+    <field name="win.eventdata.contextInfo" type="pcre2">(?i)Invoke-WebRequest</field>
+    <field name="win.eventdata.payload" type="pcre2">(?i)(Uri|http|Post|InFile|C:\\)</field>
+    <description>Possible Powershell data exfiltration detected .</description>
+    <mitre>
+      <id>T1059.001</id>
+      <id>T1567.002</id>
+    </mitre>
+  </rule>
+ 
+  <rule id="100020" level="9">
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.originalFileName" type="pcre2">(?i)(certreq\.exe)</field>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(post|config|http|C:\\)</field>
+    <options>no_full_log</options>
+    <description>Possible data exfiltration using Certreq detected</description>
+    <mitre>
+      <id>T1102</id>
+      <id>T1567.002</id>
+    </mitre>
+  </rule>
+
+</group>
