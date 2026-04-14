@@ -9,6 +9,7 @@ sudo iptables -P OUTPUT ACCEPT
 sudo iptables -A INPUT -i lo -j ACCEPT
 sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT  # SSH
 sudo iptables -A INPUT -p tcp --dport 1514 -j ACCEPT  # Wazuh agent
+sudo iptables -A INPUT -p tcp --dport 1515 -j ACCEPT  # Wazuh agent register
 sudo iptables -A INPUT -p tcp --dport 55000 -j ACCEPT  # Wazuh communication
 sudo iptables -A INPUT -p tcp --dport 9200 -j ACCEPT  # Elasticsearch
 sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
