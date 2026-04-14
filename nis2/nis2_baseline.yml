@@ -1,0 +1,66 @@
+policy:
+  id: "nis2_baseline"
+  file: "custom_nis2_baseline.yml"
+  name: "NIS2/UKSC Baseline Check"
+  description: "Custom policy for NIS2 compliance"
+  references:
+    - https://eur-lex.europa.eu/eli/dir/2022/2555
+
+checks:
+  - id: 90001
+    title: "SSH root login disabled"
+    description: "Art.21(2)(i) - Access control"
+    compliance:
+      - nis2: "Art.21.2.i"
+      - cis: "5.2.10"
+    condition: all
+    rules:
+      - 'f:/etc/ssh/sshd_config -> r:^PermitRootLogin\s+no'
+
+  - id: 90002
+    title: "Password min length >= 12"
+    compliance:
+      - nis2: "Art.21.2.i"
+    condition: all
+    rules:
+      - 'f:/etc/security/pwquality.conf -> r:minlen\s*=\s*\d{2,}'
+
+  - id: 90003
+    title: "Firewall is active"
+    compliance:
+      - nis2: "Art.21.2.a"
+    condition: all
+    rules:
+      - 'c:systemctl is-active ufw -> r:^active'
+
+  - id: 90004
+    title: "Automatic updates enabled"
+    compliance:
+      - nis2: "Art.21.2.e"
+    condition: all
+    rules:
+      - 'f:/etc/apt/apt.conf.d/20auto-upgrades -> r:APT::Periodic::Unattended-Upgrade\s*"1"'
+
+  - id: 90005
+    title: "Audit daemon running"
+    compliance:
+      - nis2: "Art.21.2.b"
+    condition: all
+    rules:
+      - 'c:systemctl is-active auditd -> r:^active'
+
+  - id: 90006
+    title: "SSH Protocol 2 only"
+    compliance:
+      - nis2: "Art.21.2.h"
+    condition: all
+    rules:
+      - 'f:/etc/ssh/sshd_config -> r:^Protocol\s+2'
+
+  - id: 90007
+    title: "No empty passwords allowed"
+    compliance:
+      - nis2: "Art.21.2.i"
+    condition: none
+    rules:
+      - 'f:/etc/shadow -> r::\s*:'
