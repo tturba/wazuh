@@ -1,0 +1,48 @@
+<!-- /var/ossec/etc/rules/local_rules.xml -->
+<group name="nis2,syscheck,critical_files">
+
+  <!-- /etc/passwd modified -->
+  <rule id="100300" level="12">
+    <if_sid>550</if_sid>
+    <field name="syscheck.path">/etc/passwd</field>
+    <description>NIS2 Art.21(2)(i): /etc/passwd modified — possible unauthorized user creation</description>
+    <group>nis2_art21i,iam,critical</group>
+    <mitre>
+      <id>T1136.001</id><!-- Create Account: Local -->
+    </mitre>
+  </rule>
+
+  <!-- /etc/shadow modified -->
+  <rule id="100301" level="14">
+    <if_sid>550</if_sid>
+    <field name="syscheck.path">/etc/shadow</field>
+    <description>NIS2: /etc/shadow modified — credential tampering suspected</description>
+    <group>nis2_art21i,credentials,critical</group>
+    <mitre>
+      <id>T1003.008</id><!-- OS Credential Dumping: /etc/shadow -->
+    </mitre>
+  </rule>
+
+  <!-- sudoers modified -->
+  <rule id="100302" level="13">
+    <if_sid>550</if_sid>
+    <field name="syscheck.path" type="pcre2">/etc/sudoers|/etc/sudoers.d/</field>
+    <description>NIS2: sudoers file modified — privilege escalation attempt</description>
+    <group>nis2_art21i,privilege_escalation,critical</group>
+    <mitre>
+      <id>T1548.003</id><!-- Abuse Elevation Control: Sudo -->
+    </mitre>
+  </rule>
+
+  <!-- SSH keys modified -->
+  <rule id="100303" level="12">
+    <if_sid>550</if_sid>
+    <field name="syscheck.path" type="pcre2">\.ssh/authorized_keys</field>
+    <description>NIS2: SSH authorized_keys modified — possible backdoor</description>
+    <group>nis2_art21i,persistence,critical</group>
+    <mitre>
+      <id>T1098.004</id><!-- SSH Authorized Keys -->
+    </mitre>
+  </rule>
+
+</group>
