@@ -1,0 +1,24 @@
+<!-- /var/ossec/etc/rules/local_rules.xml -->
+<group name="nis2,ransomware,syscheck">
+
+  <!-- Masowa modyfikacja plików — możliwy ransomware -->
+  <rule id="100200" level="14" frequency="20" timeframe="30">
+    <if_matched_group>syscheck_file</if_matched_group>
+    <description>NIS2 Art.21(2)(b): Possible ransomware — mass file modification detected (20+ files in 30s)</description>
+    <group>nis2_art21b,ransomware,attack</group>
+    <mitre>
+      <id>T1486</id><!-- Data Encrypted for Impact -->
+    </mitre>
+  </rule>
+
+  <!-- Masowe usuwanie plików -->
+  <rule id="100201" level="14" frequency="15" timeframe="30">
+    <if_matched_group>syscheck_deleted</if_matched_group>
+    <description>NIS2: Mass file deletion detected (15+ files in 30s) — possible wiper/ransomware</description>
+    <group>nis2_art21b,ransomware,wiper</group>
+    <mitre>
+      <id>T1485</id><!-- Data Destruction -->
+    </mitre>
+  </rule>
+
+</group>
