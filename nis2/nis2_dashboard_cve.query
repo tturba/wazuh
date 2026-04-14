@@ -1,0 +1,27 @@
+GET wazuh-alerts-*/_search
+{
+  "size": 0,
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "data.vulnerability.severity": "Critical" } }
+      ],
+      "filter": [
+        { "range": { "timestamp": { "gte": "now-30d/d" } } }
+      ]
+    }
+  },
+  "aggs": {
+    "top_cves": {
+      "terms": { "field": "data.vulnerability.cve.keyword", "size": 10 },
+      "aggs": {
+        "affected_agents": {
+          "cardinality": { "field": "agent.name.keyword" }
+        },
+        "max_cvss": {
+          "max": { "field": "data.vulnerability.cvss.cvss3.base_score" }
+        }
+      }
+    }
+  }
+}
