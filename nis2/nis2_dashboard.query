@@ -1,0 +1,44 @@
+GET wazuh-alerts-*/_search
+{
+  "size": 0,
+  "query": {
+    "bool": {
+      "should": [
+        { "match": { "rule.groups": "nis2" } },
+        { "match": { "data.sca.compliance.nis2": "*" } },
+        { "range": { "rule.level": { "gte": 10 } } }
+      ],
+      "minimum_should_match": 1,
+      "filter": [
+        { "range": { "timestamp": { "gte": "now-7d/d" } } }
+      ]
+    }
+  },
+  "aggs": {
+    "by_nis2_article": {
+      "terms": { "field": "data.sca.compliance.nis2.keyword", "size": 20 }
+    },
+    "by_mitre_technique": {
+      "terms": { "field": "rule.mitre.id.keyword", "size": 15 }
+    },
+    "by_agent": {
+      "terms": { "field": "agent.name.keyword", "size": 30 }
+    },
+    "by_severity": {
+      "range": {
+        "field": "rule.level",
+        "ranges": [
+          { "key": "medium", "from": 7, "to": 10 },
+          { "key": "high", "from": 10, "to": 13 },
+          { "key": "critical", "from": 13 }
+        ]
+      }
+    },
+    "alerts_over_time": {
+      "date_histogram": {
+        "field": "timestamp",
+        "calendar_interval": "day"
+      }
+    }
+  }
+}
