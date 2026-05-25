@@ -1,0 +1,37 @@
+# 1. Pobierz aktualną listę
+sudo wget https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/ipsum_4.ipset \
+  -O /var/ossec/etc/lists/ipsum_4.ipset
+
+# 2. Konwersja do formatu CDB (key:value, value puste)
+sudo tee /var/ossec/etc/lists/iplist-to-cdb.py > /dev/null <<'EOF'
+#!/usr/bin/env python3
+import re, sys
+if len(sys.argv) != 3:
+    sys.exit("Uzycie: iplist-to-cdb.py <input.ipset> <output>")
+ip_re = re.compile(r"^((?:[0-9]{1,3}\.){3}[0-9]{1,3})(?:/(\d{1,2}))?")
+cidr_map = {"32": 4, "24": 3, "16": 2, "8": 1}
+with open(sys.argv[1]) as fin, open(sys.argv[2], "w") as fout:
+    for line in fin:
+        m = ip_re.match(line.rstrip())
+        if not m:
+            continue
+        ip, mask = m.group(1), m.group(2)
+        if mask:
+            if mask not in cidr_map:
+                continue
+            parts = ip.split(".")[:cidr_map[mask]]
+            ip = ".".join(parts) + ("" if mask == "32" else ".")
+        fout.write(f"{ip}:\n")
+EOF
+sudo chmod +x /var/ossec/etc/lists/iplist-to-cdb.py
+
+sudo /var/ossec/framework/python/bin/python3 \
+  /var/ossec/etc/lists/iplist-to-cdb.py \
+  /var/ossec/etc/lists/ipsum_4.ipset \
+  /var/ossec/etc/lists/blacklist-ipsum
+
+# 3. Uprawnienia
+sudo chown wazuh:wazuh /var/ossec/etc/lists/blacklist-ipsum
+
+# 4. Sprzątanie
+sudo rm /var/ossec/etc/lists/ipsum_4.ipset
